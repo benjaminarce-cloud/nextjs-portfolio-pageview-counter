@@ -22,11 +22,11 @@ export const Header: React.FC<Props> = ({ project, views }) => {
   // Otherwise fall back to your main GitHub profile.
   const githubHref = project.repository
     ? `https://github.com/${project.repository}`
-    : "https://github.com/manuelarceaguirre";
+    : "https://github.com/benjaminarce-cloud";
 
   // Global LinkedIn link – change this to your actual profile.
   const linkedinHref =
-    "https://www.linkedin.com/in/YOUR-LINKEDIN-SLUG/"; // <--- update this
+    "https://www.linkedin.com/in/arcebenjamin"; // <--- update this
 
   const formattedViews = Intl.NumberFormat("en-US", {
     notation: "compact",
