@@ -88,18 +88,16 @@ export const Header = ({ project, views }: Props) => {
             </Link>
           ))}
 
-          {/* Personal LinkedIn for this project */}
-          <Link
-            href="https://www.linkedin.com/in/manuel-antonio-arce-aguirre/"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-100"
-          >
-            <Linkedin className="h-4 w-4" />
-            <span>LinkedIn</span>
-          </Link>
-        </div>
-      </div>
+         {/* Personal LinkedIn for this project */}
+<a
+  href="https://www.linkedin.com/in/arcebenjamin/"
+  target="_blank"
+  rel="noreferrer"
+  className="inline-flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-100"
+>
+  <Linkedin className="h-4 w-4" />
+  <span>LinkedIn</span>
+</a>
 
       {/* Big title block */}
       <div className="mx-auto flex max-w-5xl flex-col gap-3 px-6 pb-6 lg:px-0">
