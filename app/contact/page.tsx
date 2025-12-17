@@ -20,7 +20,7 @@ export default function ContactPage() {
         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
           {/* Email */}
           <a
-            href="mailto:YOUR_EMAIL_HERE"
+            href="mailto:arceb3013@gmail.com"
             className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-200 hover:border-zinc-600 hover:bg-zinc-900 transition"
           >
             <Mail className="h-5 w-5 text-zinc-400" />
@@ -29,7 +29,7 @@ export default function ContactPage() {
 
           {/* GitHub */}
           <a
-            href="https://github.com/manuelarceaguirre"
+            href="https://github.com/benjaminarce-cloud"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-200 hover:border-zinc-600 hover:bg-zinc-900 transition"
