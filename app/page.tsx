@@ -35,7 +35,7 @@ export default function Home() {
       <div className="hidden w-screen h-px animate-glow md:block animate-fade-right bg-gradient-to-r from-zinc-300/0 via-zinc-300/50 to-zinc-300/0" />
       <div className="my-16 text-center animate-fade-in">
         <h2 className="text-sm text-zinc-500 ">
-         Industrial & Process Engineering student focused on logistics, data systems,
+         Industrial Engineering student focused on logistics, processes, data systems,
   and building investigations that actually change decisions.
           <Link
             target="_blank"
