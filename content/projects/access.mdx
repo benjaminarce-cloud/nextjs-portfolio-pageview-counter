@@ -1,67 +1,138 @@
 ---
-title: "Manufacturing Cost Intelligence System"
-description: Trying to make margin conversations less hand-wavy and more systematic.
-repository: benjaminarce-cloud/manufacturing-cost-intelligence
+title: "Corporate Scenario Planner for Cross-Border Operations"
+description: A “flight simulator” for cross-border logistics and manufacturing costs, built to replace gut-feel spreadsheets.
+repository: YOUR-GITHUB-USER/corporate-scenario-planner
 date: "2025-12-01"
 published: true
 ---
 
 ## What this actually is
 
-This is a model + simple interface that lets you play with electricity, labor, and material
-costs for a manufacturing line and see how product margins react. It’s not a perfect
-digital twin, and it’s not “production software” yet. It’s a tool I’m building to move
-conversations from “I feel like margins will drop” to “here’s roughly how much and why.”
+This tool is basically a Cross-Border Cost & Scenario Optimizer—a “flight simulator”
+for a company&apos;s logistics and supply chain operations.
 
-## Why I cared enough to build it
+In practice, it&apos;s an interactive dashboard that lets a manager simulate the financial
+impact of real-world disruptions on the entire product portfolio. It&apos;s used by operations
+managers, logistics directors, and CFO-types to make quick, data-driven decisions like:
 
-I kept seeing margin conversations that were basically vibes:
-someone mentions energy prices, someone else mentions labor, and the discussion
-ends with “we should be careful” but no one can say how exposed we actually are.
+- “Diesel fuel just went up 15% in Mexico. What is the total, bottom-line annual impact
+  on profit, and which routes get hit the hardest?”
+- “A new supplier offers 10% cheaper steel, but logistics costs go up 5%. Is that actually
+  a good trade-off?”
+- “We want to give drivers a 5% wage increase. Can we absorb that or do we need to raise prices?
+  If we raise prices, what happens to volume?”
 
-The process engineer in me hates that. If we have a line, costs, and demand, we should
-at least be able to run a few scenarios and see which products are fragile and which are
-robust. This project is my attempt to build that kind of clarity from the ground up.
+It takes complex, company-wide questions and gives clear, quantified answers in seconds,
+plus an AI-generated strategic briefing that recommends a path forward.
+
+## Context / why I cared enough to build it
+
+The motivation came from how chaotic and opaque cross-border cost management really is.
+
+Before this tool, the process looked something like:
+
+- A manager gets an email about a new fuel surcharge or updated labor rate.
+- They ask an analyst to “run the numbers.”
+- The analyst starts pulling data from three or four different spreadsheets:
+  bills of materials, shipping routes, labor costs, etc.
+- They tweak a few cells, pray nothing breaks, and then try to estimate the impact on
+  one or two big products.
+
+It was slow, fragile, and almost impossible to see the total system-wide impact. By the
+time you had a number, the situation could already be different. There was no way to
+quickly compare alternative responses or see where the real risks were.
+
+I built this to replace that reactive, spreadsheet-driven approach with a single place
+that gives instant clarity and makes it easier to think strategically instead of just
+putting out fires.
 
 ## What worked (so far)
 
-- I can plug in different cost scenarios (energy, labor, materials) and quickly compare
-  margin outcomes across products.
-- The structure is simple enough that non-technical people can read the main assumptions
-  and understand where the numbers come from.
-- For me, it forced a much clearer breakdown of cost drivers: which ones move the needle,
-  which ones barely matter, and which ones we were just talking about out of habit.
-
-It’s not “finished”, but it’s already good enough to pressure-test basic assumptions and
-have more grounded discussions.
+- The scenario planner is genuinely useful. Being able to move a single slider—“+15% on
+  semiconductors” or “+10% fuel in Mexico”—and see a multi-million-dollar annual P&L
+  impact in real time is the “wow” moment. What used to take days of analysis is now
+  instant, and you can explore multiple scenarios in one sitting.
+- The AI-generated briefing is a real time-saver. It doesn&apos;t just repeat the numbers;
+  it acts like a strategic analyst. In one “Semiconductor Crisis” test, it correctly
+  identified chips as the immediate problem but suggested focusing on internal machine-time
+  optimization as the highest-leverage, most feasible lever—something that wasn&apos;t obvious
+  from the raw numbers alone.
+- The portfolio health dashboard surfaces hidden risks. The “Stars” and “At-Risk” views
+  highlight high-volume products running on razor-thin margins, which are huge business
+  risks that weren&apos;t obvious from traditional reporting. It naturally starts conversations
+  about which products need price reviews or structural changes.
 
 ## What was messy or incomplete (being honest)
 
-- The demand side is oversimplified. Right now I’m not modeling realistic capacity
-  constraints or more complex sales patterns.
-- Some inputs are still educated guesses instead of being wired into live systems.
-  That’s fine for exploration, but not for serious decision-making.
-- The UI layer is basically a power-user tool. It works for me; it would confuse most
-  people if I just dropped it on their desktop.
+- The data is static and manually entered. All the cost drivers (fuel, labor, materials)
+  still come from a CSV. For this to be truly useful in production, it would need live
+  data feeds: commodity prices, FX rates, freight indices, etc.
+- The “Feasibility” score is subjective. The AI&apos;s ability to suggest smart, non-obvious
+  levers depends on a Feasibility score in the cost-driver table. Right now those scores
+  are just my gut feel. A real implementation would need structured input from operations
+  leaders to make those scores meaningful.
+- The simulation model is too linear. It assumes a straight line from “+10% cost” to
+  “+10% impact,” which ignores real-world non-linearities like volume discounts,
+  step costs, and more complex pricing behavior.
+- The region logic is simplified. A lot of the logic implicitly defaults to “Texas” and
+  doesn&apos;t fully model multi-region routes with different costs, taxes, and tariffs at
+  each stage of the journey.
 
-In other words: it’s a strong prototype, not a finished product.
+So right now, it&apos;s a powerful simulator and thinking tool, but not yet a fully
+battle-hardened production system.
 
 ## What I’d do next
 
-If I had a dedicated block of time to push this further, I’d:
+- **Live data integration (Priority #1).** Replace the static `manual_cost_drivers.csv`
+  with live data sources. Start with fuel prices and FX rates so scenarios are anchored
+  in reality.
+- **Build a more realistic COGS model.** Break costs into variable (materials, fuel),
+  fixed (leases, salaries), and step costs (e.g., needing a new truck after a certain
+  volume threshold) instead of treating everything as proportional.
+- **Model multi-step logistics routes.** Move from a simple per-product cost structure
+  to route “journeys” like: assembly → sea freight → customs → warehouse → trucking.
+  Track cost accumulation at each stage.
+- **Make the AI interactive.** Turn the briefing into a conversational analyst: after
+  it gives the initial summary, the user can ask things like “What&apos;s the ROI on the
+  machine-time optimization you mentioned?” or “Compare the top three levers you suggested.”
 
-- Tighten the link to real data sources so cost drivers and prices are always up to date.
-- Add a more realistic demand and capacity model, even if it stays lightweight.
-- Clean up the interface so people can save scenarios, compare them, and share them without
-  touching raw files.
+## Technical deep dive (bullet list)
 
-Longer term, I’d like this to plug into a full “what-if” engine for manufacturing and
-logistics decisions, not just a standalone margin calculator.
+**Tech stack**
 
-## Deep dive
+- Frontend / app: Streamlit  
+- Data manipulation: Pandas, NumPy  
+- Optimization: SciPy (`scipy.optimize.linprog`)  
+- AI / LLM: OpenAI Python library (Chat API)  
+- Plotting & reporting: Plotly, FPDF2, Kaleido  
 
-If you want the more serious, technical side of this:
+**Data sources**
 
-- Code / work-in-progress repo:  
-  `https://github.com/benjaminarce-cloud/manufacturing-cost-intelligence`  
-  _(replace this with the actual link once you’re ready to share)_
+- `bom_products.csv`: bill of materials for each product, including components, quantities,
+  price, volume, elasticity, region, etc.
+- `manual_cost_drivers.csv`: master cost table defining rate, unit, and Feasibility score
+  for each driver (fuel, labor, materials, etc.).
+- The simulation engine joins these in memory via the component field to look up cost
+  drivers for each BOM line.
+
+**Modeling & optimization**
+
+- Simulation engine: `portfolio_simulator.py` does a bottom-up cost simulation, aggregating
+  per-unit costs to portfolio-level P&L.
+- It can run multi-driver scenarios, price pass-through, and simple demand elasticity
+  in a single run.
+- The AI briefing is driven by a carefully engineered prompt with:
+  - A management-consultant persona,
+  - Feasibility scores as hints for internal levers, and
+  - Negative constraints (what the AI should **not** do, like just stating the obvious).
+
+**Interesting engineering details**
+
+- Data validation on startup (`utils.py`) to catch duplicate costs, unit mismatches,
+  and other problems early.
+- Clear separation between “brain” (core logic in `/app/core`) and “face” (Streamlit UI
+  in `/app/main.py`), so the simulation engine is testable and reusable.
+- Secure API key handling with `st.secrets`, with a fallback password input if no secret
+  is set.
+- Use of `st.session_state` to cache the AI report so slider interactions don&apos;t trigger
+  unnecessary repeated API calls.
