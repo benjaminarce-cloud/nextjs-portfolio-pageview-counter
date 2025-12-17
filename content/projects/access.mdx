@@ -1,76 +1,67 @@
 ---
-title: "@chronark/access"
-description: A minimal library for access control. It is designed to be used together with opaque access tokens by providing a simple interface to define roles with different access permissions and verifying requests to resources.
-repository: chronark/access
-date: "2022-11-13"
+title: "Manufacturing Cost Intelligence System"
+description: Trying to make margin conversations less hand-wavy and more systematic.
+repository: YOUR-GITHUB-USER/manufacturing-cost-intel
+date: "2025-12-01"
 published: true
-  
 ---
-A minimal library for access control. It is designed to be used together with opaque access tokens by providing a simple interface to define roles with different access permissions and verifying requests to resources.
 
-- Fully typed
-- Zero dependencies
-- Serializable to store in a database
+## What this actually is
 
-## Install
+This is a model + simple interface that lets you play with electricity, labor, and material
+costs for a manufacturing line and see how product margins react. It’s not a perfect
+digital twin, and it’s not “production software” yet. It’s a tool I’m building to move
+conversations from “I feel like margins will drop” to “here’s roughly how much and why.”
 
-```sh-session
-npm i @chronark/access
-```
+## Why I cared enough to build it
 
-## Usage
+I kept seeing margin conversations that were basically vibes:
+someone mentions energy prices, someone else mentions labor, and the discussion
+ends with “we should be careful” but no one can say how exposed we actually are.
 
-```ts
-import { AccessControl, Role } from "@chronark/access";
+The process engineer in me hates that. If we have a line, costs, and demand, we should
+at least be able to run a few scenarios and see which products are fragile and which are
+robust. This project is my attempt to build that kind of clarity from the ground up.
 
-/**
- * Define all your resources and their access patterns
- *
- * key => resource
- * value => array of access types
- */
-type Statements = {
-  user: ["read", "write", "dance"];
-  team: ["read", "write"];
-};
+## What worked (so far)
 
-/**
- * Create an access control instance and pass the Statements type to enjoy full
- * type safety
- */
-const ac = new AccessControl<Statements>();
+- I can plug in different cost scenarios (energy, labor, materials) and quickly compare
+  margin outcomes across products.
+- The structure is simple enough that non-technical people can read the main assumptions
+  and understand where the numbers come from.
+- For me, it forced a much clearer breakdown of cost drivers: which ones move the needle,
+  which ones barely matter, and which ones we were just talking about out of habit.
 
-/**
- * Now you can define one or more roles by specifying the access permissions
- *
- * This is already fully typed and typescript will let you know if you try to
- * use anything, that is not defined in the Statements type.
- */
-const role = ac.newRole({
-  user: ["read", "write"],
-  team: ["read"],
-});
+It’s not “finished”, but it’s already good enough to pressure-test basic assumptions and
+have more grounded discussions.
 
-/**
- * Simulate storing and retrieving the role in a database
- *
- * The idea here is, that you can store permissions alongside an API token.
- * Now, when you verify the token, you can also verify the access permissions.
- */
-const serialized = role.toString();
+## What was messy or incomplete (being honest)
 
-/**
- * Note how you can pass in the Statements type again, to get full type safety
- */
-const recovered = Role.fromString<Statements>(serialized);
+- The demand side is oversimplified. Right now I’m not modeling realistic capacity
+  constraints or more complex sales patterns.
+- Some inputs are still educated guesses instead of being wired into live systems.
+  That’s fine for exploration, but not for serious decision-making.
+- The UI layer is basically a power-user tool. It works for me; it would confuse most
+  people if I just dropped it on their desktop.
 
-/**
- * Validate the role by specifying the resource and the required access
- *
- * everything is fully typed
- */
-const res = recovered.authorize({"team", ["read"]});
+In other words: it’s a strong prototype, not a finished product.
 
-// res.success => boolean
-// res.error => string | undefined provides a reason for failure
-```
+## What I’d do next
+
+If I had a dedicated block of time to push this further, I’d:
+
+- Tighten the link to real data sources so cost drivers and prices are always up to date.
+- Add a more realistic demand and capacity model, even if it stays lightweight.
+- Clean up the interface so people can save scenarios, compare them, and share them without
+  touching raw files.
+
+Longer term, I’d like this to plug into a full “what-if” engine for manufacturing and
+logistics decisions, not just a standalone margin calculator.
+
+## Deep dive
+
+If you want the more serious, technical side of this:
+
+- Code / work-in-progress repo:  
+  `https://github.com/YOUR-GITHUB-USER/manufacturing-cost-intel`  
+  _(replace this with the actual link once you’re ready to share)_
