@@ -43,10 +43,14 @@ export default async function ProjectsPage() {
       <div className="px-6 pt-20 mx-auto space-y-8 max-w-7xl lg:px-8 md:space-y-16 md:pt-24 lg:pt-32">
         <div className="max-w-2xl mx-auto lg:mx-0">
           <h2 className="text-3xl font-bold tracking-tight text-zinc-100 sm:text-4xl">
-            Projects
+            Projects & experiments
           </h2>
-          <p className="mt-4 text-zinc-400">
-            Some of the projects are from work and some are on my own time.
+          <p className="mt-4 text-zinc-400 text-sm sm:text-base">
+            This isn&apos;t a CV section. Think of it more like sitting down with me
+            and letting me walk you through what I actually tried: what the project
+            was supposed to do, what genuinely worked, what was messy, and what I&apos;d
+            do next. If you want the more serious, technical version, each project
+            links out to a deeper write-up or repo.
           </p>
         </div>
         <div className="w-full h-px bg-zinc-800" />
