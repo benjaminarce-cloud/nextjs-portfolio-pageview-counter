@@ -21,7 +21,7 @@ export default async function ProjectsPage() {
     return acc;
   }, {} as Record<string, number>);
 
-  // take only published projects and sort by date (newest first)
+  // Only published projects, newest first
   const published = allProjects
     .filter((p) => p.published)
     .sort(
@@ -36,23 +36,25 @@ export default async function ProjectsPage() {
   return (
     <div className="relative pb-16">
       <Navigation />
+
       <div className="px-6 pt-20 mx-auto space-y-8 max-w-7xl lg:px-8 md:space-y-16 md:pt-24 lg:pt-32">
         <div className="max-w-2xl mx-auto lg:mx-0">
           <h2 className="text-3xl font-bold tracking-tight text-zinc-100 sm:text-4xl">
             Projects &amp; experiments
           </h2>
           <p className="mt-4 text-zinc-400 text-sm sm:text-base">
-            This isn&apos;t a CV section. Think of it more like sitting down with me
-            and letting me walk you through what I actually tried: what the project
-            was supposed to do, what genuinely worked, what was messy, and what I&apos;d
-            do next. If you want the more serious, technical version, each project
-            links out to a deeper write-up or repo.
+            This isn&apos;t a CV section. It&apos;s closer to sitting down with me while I
+            walk you through what I actually tried: what the project was supposed to do,
+            what genuinely worked, what was messy, and what I&apos;d do next. If you want
+            the more serious, technical version, each project links out to a deeper
+            write-up or repo.
           </p>
         </div>
+
         <div className="w-full h-px bg-zinc-800" />
 
         {featured && (
-          <div className="grid grid-cols-1 gap-8 mx-auto lg:grid-cols-2 ">
+          <div className="grid grid-cols-1 gap-8 mx-auto lg:grid-cols-2">
             <Card>
               <Link href={`/projects/${featured.slug}`}>
                 <article className="relative w-full h-full p-4 md:p-8">
@@ -94,7 +96,7 @@ export default async function ProjectsPage() {
               </Link>
             </Card>
 
-            <div className="flex flex-col w-full gap-8 mx-auto border-t border-gray-900/10 lg:mx-0 lg:border-t-0 ">
+            <div className="flex flex-col w-full gap-8 mx-auto border-t border-gray-900/10 lg:mx-0 lg:border-t-0">
               {[top2, top3].filter(Boolean).map((project) => (
                 <Card key={project.slug}>
                   <Article project={project} views={views[project.slug] ?? 0} />
