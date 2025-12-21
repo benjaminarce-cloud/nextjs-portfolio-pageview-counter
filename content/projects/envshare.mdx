@@ -1,136 +1,149 @@
 ---
-title: "Investigation: CoWoS/HBM Resilience–Decarbonization Trade-off"
-description: A tri-objective simulation–optimization model of the CoWoS/HBM advanced packaging chokepoint in the global semiconductor supply chain.
-repository: "" # or a future repo name, or remove this line for now
+title: "Choke Point: A Tri-Objective Simulation–Optimization Model of the Resilience–Decarbonization Trade-off at the CoWoS/HBM Packaging Stage of the Global Semiconductor Supply Chain"
+description: Thesis project modeling the cost–resilience–carbon trade-off at the CoWoS/HBM advanced packaging chokepoint, under realistic disruption scenarios and without assuming cross-firm data sharing.
+repository: "" # add a repo name later if you put the model on GitHub
 date: "2025-12-15"
 published: true
 ---
 
-> Reality check: this is an in-progress thesis, not a finished product. The whole point is to show the work of getting from idea to model.
+> Reality check: this is an active thesis, not a finished product. The whole point is to make the trade-offs at one very specific chokepoint visible and quantifiable.
 
 ---
 
-## What this actually is
+## What this thesis is about
 
-This thesis develops a **tri-objective simulation–optimization model** for the CoWoS/HBM advanced packaging chokepoint in the global semiconductor supply chain.
+This thesis builds a **tri-objective simulation–optimization model** for a single, highly constrained stage in the semiconductor supply chain:
+
+> the CoWoS/HBM advanced packaging chokepoint for high-end AI chips.
 
 The model is designed to quantify the trade-off between:
 
-- **Cost**
-- **Resilience** (service loss and recovery time under shocks)
+- **Total cost**
+- **Resilience** – service performance and recovery time under disruption
 - **Life-cycle CO₂ emissions**
 
-A key design choice is that it **does not rely on cross-firm data sharing**. Instead, it focuses on levers a single firm can realistically control, such as:
+A key design choice is that it **does not assume cross-firm data sharing**. Instead, it focuses on the levers a single firm can realistically control at this node:
 
-- regional allocation of advanced packaging,
-- safety / surge capacity,
-- and transport modes (air vs sea).
-
----
-
-## Core research questions
-
-Right now the thesis is organized around questions like:
-
-- **RQ1.** What does the Pareto frontier between **cost**, **resilience**, and **carbon emissions** look like for CoWoS/HBM packaging under realistic disruption scenarios?
-- **RQ2.** Which **enterprise-controllable levers** (regional capacity split, safety capacity, transport modes, etc.) actually move you along that frontier?
-- **RQ3.** How far can a single firm go in improving resilience and decarbonization **without** assuming industry-wide information sharing and collaboration?
-
-These questions are the “north star” that everything else (literature, modeling, experiments) hangs off.
+- how CoWoS/HBM capacity is allocated across regions,
+- how much “safety” or surge capacity to hold,
+- which transport modes to prioritize under pressure.
 
 ---
 
-## Why semiconductors, why CoWoS/HBM, why this trade-off
+## Why this chokepoint matters
 
-Semiconductors are a **systemic input**: AI, autos, defense, and basically every modern industry run through them.
+Semiconductors are the invisible infrastructure of the modern economy. A single advanced chip quietly sits behind smartphones, EVs, medical devices, cloud data centers, and large-scale AI systems.
 
-Within that system, CoWoS/HBM advanced packaging has become a chokepoint because:
+The supply chain that produces those chips is:
 
-- AI demand is exploding,
-- CoWoS capacity is limited and geographically concentrated,
-- HBM + advanced packaging are tightly coupled to both **performance** and **reliability**.
+- global and deeply segmented,
+- full of geographic and technological chokepoints,
+- and shaped by national security and industrial policy, not just cost.
 
-At the same time, firms are under pressure to **decarbonize**:
+CoWoS/HBM has become one of the most critical of these chokepoints because:
 
-- cleaner grids and locations,
-- lower-carbon freight,
-- but these choices can conflict with resilience (e.g., slower but greener transport).
+- AI accelerators are fundamentally limited by how fast they can move data between compute and memory.
+- CoWoS packaging with HBM solves that by putting logic and stacked memory side-by-side on a silicon interposer, enabling **terabytes per second** of bandwidth at lower energy per bit.
+- CoWoS/HBM capacity is far more concentrated than wafer fabrication and has been a binding constraint for AI GPU output.
 
-Most of the literature treats **resilience** and **sustainability** separately, or assumes that firms will happily share data and coordinate. This thesis explicitly asks:
-
-> “What can you realistically do if nobody wants to share their internals with you?”
+Dependence on Taiwan makes this not just a technical bottleneck but a geopolitical one. A full-scale war is not something I try to simulate in detail, but it is the extreme case that exposes how fragile the system is. This thesis focuses on more operational but still serious shocks: multi-week CoWoS outages, HBM shortfalls, and logistics interruptions that can be represented in a simulation model.
 
 ---
 
-## How I’m structuring the work
+## Resilience vs decarbonization at CoWoS/HBM
 
-The roadmap behind this thesis is roughly:
+At this node, **resilience** and **decarbonization** do not automatically move in the same direction.
 
-### 1. Introduction & context
+Making the system “more resilient” usually means adding slack:
 
-- Motivate semiconductors as a systemic risk.
-- Explain, in normal language, what CoWoS/HBM is and why it’s a bottleneck.
-- Frame the **resilience vs decarbonization** tension at this node.
-- Position the work against the existing resilience / decarb literature and the “just share data” assumption.
+- extra capacity,
+- redundant sites,
+- parallel routing options,
+- faster (often dirtier and more expensive) transport modes.
 
-### 2. Literature backbone
+On the other hand, decarbonization pushes toward:
 
-Three main pillars:
+- shifting volume to lower-carbon locations and grids,
+- relying more on sea or rail instead of air,
+- redesigning flows to reduce emissions per unit.
 
-- **Resilience / disruption modeling**  
-  Simulation–optimization frameworks, ripple effect, disruption and recovery metrics.
-
-- **Decarbonization & multi-objective optimization**  
-  How others embed CO₂ into cost models, use carbon prices, and build multi-objective frontiers.
-
-- **Semiconductor-specific context**  
-  Where packaging sits in the global semi supply chain and what is known about its vulnerabilities.
-
-The outcome is a clear gap: **no tri-objective sim–opt model at a specific semi chokepoint under no-sharing constraints.**
-
-### 3. Methodology: formal model + simulation
-
-- Define the network:
-  - nodes (HBM suppliers, CoWoS sites in TW/JP/US, downstream DC/OEM),
-  - flows (HBM → CoWoS → DC → OEM),
-  - disruption types (e.g. multi-week CoWoS outage).
-- Build a formal **multi-objective optimization model**:
-  - decision variables: regional allocation, safety capacity, transport mode shares,
-  - objectives: expected cost, service / recovery metrics, life-cycle CO₂.
-- Couple it to a **simulation layer** that:
-  - plays out disruptions and demand scenarios,
-  - measures recovery time, lost demand, and emissions under each candidate policy.
-
-### 4. Carbon accounting module
-
-- Use freight emissions logic (distance × tonnes × mode emission factors).
-- Combine process energy per unit with regional grid intensity for packaging.
-- Optionally translate CO₂ into a cost dimension via carbon pricing scenarios.
-
-### 5. Case study & experiments
-
-- Set up a stylized but plausible CoWoS/HBM network (locations, capacities, distances, emission factors).
-- Run disruption and carbon-price scenarios.
-- Generate 2D/3D Pareto frontiers and sensitivity plots.
-- Interpret when resilience and decarbonization are aligned vs in tension.
+The same design decision that looks “green” in a carbon report can quietly erode resilience by stretching lead times or reducing buffer capacity. The thesis is about making that tension explicit at one chokepoint instead of treating “resilience” and “sustainability” as separate slide decks.
 
 ---
 
-## Where it is right now
+## How this positions in the literature
 
-Very honestly, the thesis is currently in the **early-to-mid build** stage:
+Three patterns in the existing work shaped this thesis:
 
-- Phase 0/1: core idea + introduction are locked and iterating.
-- Literature review is sketched with clear gaps identified.
-- Model structure (sets, variables, objectives, constraints) is defined on paper and being translated into code.
-- Simulation details and carbon module are being refined around a CoWoS/HBM case study.
+1. **Resilience and sustainability are usually treated separately.**  
+   Resilience papers focus on disruption and recovery. Sustainability papers focus on emissions and environmental impact. Very few models quantify how choices for one dimension move the other, and almost none do this at a semiconductor packaging chokepoint.
 
-As the work evolves, this page will be updated with:
+2. **“Just share more data” is the default answer.**  
+   Many resilience frameworks end by recommending more transparency and collaboration across tiers. In semiconductors, where IP, export controls, and national security are central, broad symmetric data sharing is not a realistic baseline.
 
-- more precise model choices,
-- early experimental results,
-- and links to drafts / slides / code.
+3. **There is little quantitative work at specific semi chokepoints.**  
+   Reviews highlight packaging as a vulnerability but usually stop at conceptual discussion. There is a gap in tri-objective models focused on a specific node like CoWoS/HBM.
+
+This thesis takes a more conservative and, in my view, more realistic stance: it asks what can be done **with the levers and information a single enterprise actually controls** at CoWoS/HBM, instead of assuming a fully cooperative, data-rich network.
 
 ---
 
-If this sounds interesting and you want to see drafts or talk about the model, you can reach me through the contact page or LinkedIn.
+## Research questions
+
+The thesis focuses on three main questions:
+
+- **RQ1.** What does the Pareto frontier between **total cost**, **resilience** (service performance and recovery time under disruption), and **life-cycle carbon emissions** look like for the CoWoS/HBM packaging network under a set of realistic disruption and carbon-price scenarios?
+
+- **RQ2.** Among the **firm-controllable design levers** at this chokepoint—such as regional allocation of CoWoS/HBM capacity, safety capacity, and transport mode mix—which have the largest impact on a design’s position along that cost–resilience–carbon frontier?
+
+- **RQ3.** How robust are selected Pareto-efficient designs to uncertainty in disruption severity and carbon prices, and in which regions of the frontier do resilience gains come into the sharpest conflict with decarbonization goals?
+
+---
+
+## Modeling approach (high level)
+
+The thesis links two layers:
+
+1. **Multi-objective optimization layer**
+
+   - Generates candidate network designs / policies:
+     - regional capacity splits
+     - safety capacity levels
+     - transport mode mixes
+   - Treats cost, resilience metrics, and emissions as competing objectives.
+   - Produces a set of Pareto-efficient designs rather than a single “best” answer.
+
+2. **Simulation layer**
+
+   - Runs discrete-event or Monte Carlo simulations over disruption scenarios:
+     - multi-week CoWoS outages,
+     - demand surges,
+     - combined shocks.
+   - For each candidate design, measures:
+     - total cost,
+     - service levels and recovery time,
+     - life-cycle CO₂e.
+
+Together they form an **ex-ante scenario tool**: the goal is not to predict the exact next shock, but to understand how different design choices change recovery behavior and emissions when shocks hit.
+
+---
+
+## Where this investigation is right now
+
+As of now, the work is in an **early-to-mid build phase**:
+
+- Introduction and motivation are drafted and iterating.
+- Literature review is being built around three pillars:
+  - resilience / disruption modeling,
+  - decarbonization & multi-objective optimization,
+  - semiconductor resilience and packaging.
+- Model structure (sets, variables, objectives, constraints) is being formalized and translated into code.
+- Disruption scenarios and a stylized CoWoS/HBM case study are being scoped.
+
+As the thesis progresses, this page will be updated with:
+
+- concrete model choices,
+- early experimental frontiers,
+- and links to drafts and slides.
+
+If you’re curious about the guts (DES logic, objective formulations, or scenario design), the best way is to reach out via the contact page or LinkedIn.
