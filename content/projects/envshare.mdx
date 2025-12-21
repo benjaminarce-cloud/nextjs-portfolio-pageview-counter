@@ -1,116 +1,136 @@
 ---
-title: envshare.dev
-description: EnvShare is a simple tool to share environment variables securely. It uses AES-GCM to encrypt your data before sending it to the server. The encryption key never leaves your browser.
-date: "2023-01-16"
-url: https://envshare.dev
-repository: chronark/envshare
+title: "Investigation: CoWoS/HBM Resilience–Decarbonization Trade-off"
+description: A tri-objective simulation–optimization model of the CoWoS/HBM advanced packaging chokepoint in the global semiconductor supply chain.
+repository: "" # or a future repo name, or remove this line for now
+date: "2025-12-15"
 published: true
 ---
 
-EnvShare is a simple tool to share environment variables securely. It uses
-**AES-GCM** to encrypt your data before sending it to the server. The encryption
-key never leaves your browser.
+> Reality check: this is an in-progress thesis, not a finished product. The whole point is to show the work of getting from idea to model.
 
-## Features
+---
 
-- **Shareable Links:** Share your environment variables securely by sending a
-  link
-- **End-to-End Encryption:** AES-GCM encryption is used to encrypt your data
-  before sending it to the server
-- **Limit number of reads:** Limit the number of times a link can be read
-- **Auto Expire:** Automatically expire links and delete data after a certain
-  time
+## What this actually is
 
+This thesis develops a **tri-objective simulation–optimization model** for the CoWoS/HBM advanced packaging chokepoint in the global semiconductor supply chain.
 
+The model is designed to quantify the trade-off between:
 
-![](https://github.com/chronark/envshare/raw/main/img/envshare.png)
+- **Cost**
+- **Resilience** (service loss and recovery time under shocks)
+- **Life-cycle CO₂ emissions**
 
-## Built with
+A key design choice is that it **does not rely on cross-firm data sharing**. Instead, it focuses on levers a single firm can realistically control, such as:
 
-- [Next.js](https://nextjs.org)
-- [tailwindcss](https://tailwindcss.com)
-- Deployed on [Vercel](https://vercel.com?utm_source=envshare)
-- Data stored on [Upstash](https://upstash.com?utm_source=envshare)
+- regional allocation of advanced packaging,
+- safety / surge capacity,
+- and transport modes (air vs sea).
 
-## Deploy your own
+---
 
-Detailed instructions can be found [here](https://envshare.dev/deploy)
+## Core research questions
 
-All you need is a Redis database on Upstash and a Vercel account. Click the
-button below to clone and deploy:
+Right now the thesis is organized around questions like:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?demo-title=EnvShare&demo-description=Simple%20Next.js%20%2B%20Upstash%20app%20to%20share%20environment%20variables%20securely%20using%20AES-GCM%20encryption.&demo-url=https%3A%2F%2Fenvshare.dev%2F&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F5SaFBHXp5FBFJbsTzVqIJ3%2Ff0f8382369b7642fd8103debb9025c11%2Fenvshare.png&project-name=EnvShare&repository-name=envshare&repository-url=https%3A%2F%2Fgithub.com%2Fchronark%2Fenvshare&from=templates&integration-ids=oac_V3R1GIpkoJorr6fqyiwdhl17)
+- **RQ1.** What does the Pareto frontier between **cost**, **resilience**, and **carbon emissions** look like for CoWoS/HBM packaging under realistic disruption scenarios?
+- **RQ2.** Which **enterprise-controllable levers** (regional capacity split, safety capacity, transport modes, etc.) actually move you along that frontier?
+- **RQ3.** How far can a single firm go in improving resilience and decarbonization **without** assuming industry-wide information sharing and collaboration?
 
+These questions are the “north star” that everything else (literature, modeling, experiments) hangs off.
 
+---
 
-## Configuration
+## Why semiconductors, why CoWoS/HBM, why this trade-off
 
-### Environment Variables
+Semiconductors are a **systemic input**: AI, autos, defense, and basically every modern industry run through them.
 
-`ENABLE_VERCEL_ANALYTICS` Any truthy value will enable Vercel Analytics. This is turned off by default
+Within that system, CoWoS/HBM advanced packaging has become a chokepoint because:
 
-## Contributing
+- AI demand is exploding,
+- CoWoS capacity is limited and geographically concentrated,
+- HBM + advanced packaging are tightly coupled to both **performance** and **reliability**.
 
-This repository uses `pnpm` to manage dependencies. Install it using
-`npm install -g pnpm`
+At the same time, firms are under pressure to **decarbonize**:
 
-Please run `pnpm fmt` before committing to format the code.
+- cleaner grids and locations,
+- lower-carbon freight,
+- but these choices can conflict with resilience (e.g., slower but greener transport).
 
-## Docs
+Most of the literature treats **resilience** and **sustainability** separately, or assumes that firms will happily share data and coordinate. This thesis explicitly asks:
 
-Docs in the README are temporary and will be moved to the website soon.
+> “What can you realistically do if nobody wants to share their internals with you?”
 
-### API
+---
 
-#### Store a secret
+## How I’m structuring the work
 
-**PLEASE NEVER EVER UPLOAD UNENCRYPTED SECRETS.**
+The roadmap behind this thesis is roughly:
 
-This endpoint is only meant to store **already encrypted** secrets. The
-encrypted secrets are stored in plain text.
+### 1. Introduction & context
 
-```sh-session
-$ curl -XPOST -s https://envshare.dev/api/v1/secret -d "already-encrypted-secret"
-```
+- Motivate semiconductors as a systemic risk.
+- Explain, in normal language, what CoWoS/HBM is and why it’s a bottleneck.
+- Frame the **resilience vs decarbonization** tension at this node.
+- Position the work against the existing resilience / decarb literature and the “just share data” assumption.
 
-You can add optional headers to configure the ttl and number of reads.
+### 2. Literature backbone
 
-```sh-session
-$ curl -XPOST -s https://envshare.dev/api/v1/secret -d "already-encrypted-secret" -H "envshare-ttl: 3600" -H "envshare-reads: 10"
-```
+Three main pillars:
 
-- Omitting the `envshare-ttl` header will set a default of 30 days. Disable the
-  ttl by setting it to 0. (`envshare-ttl: 0`)
-- Omitting the `envshare-reads` header will simply disable it and allow reading
-  for an unlimited number of times.
+- **Resilience / disruption modeling**  
+  Simulation–optimization frameworks, ripple effect, disruption and recovery metrics.
 
-This endpoint returns a JSON response with the secret id:
+- **Decarbonization & multi-objective optimization**  
+  How others embed CO₂ into cost models, use carbon prices, and build multi-objective frontiers.
 
-```json
-{
-  "data": {
-    "id": "HdPbXgpvUvNk43oxSdK97u",
-    "ttl": 86400,
-    "reads": 2,
-    "expiresAt": "2023-01-19T20:47:28.383Z",
-    "url": "http://envshare.dev/api/v1/secret/HdPbXgpvUvNk43oxSdK97u"
-  }
-}
-```
+- **Semiconductor-specific context**  
+  Where packaging sits in the global semi supply chain and what is known about its vulnerabilities.
 
-#### Retrieve a secret
+The outcome is a clear gap: **no tri-objective sim–opt model at a specific semi chokepoint under no-sharing constraints.**
 
-You need an id to retrieve a secret. The id is returned when you store a secret.
+### 3. Methodology: formal model + simulation
 
-```sh-session
-$ curl -s https://envshare.dev/api/v1/secret/HdPbXgpvUvNk43oxSdK97u
-```
+- Define the network:
+  - nodes (HBM suppliers, CoWoS sites in TW/JP/US, downstream DC/OEM),
+  - flows (HBM → CoWoS → DC → OEM),
+  - disruption types (e.g. multi-week CoWoS outage).
+- Build a formal **multi-objective optimization model**:
+  - decision variables: regional allocation, safety capacity, transport mode shares,
+  - objectives: expected cost, service / recovery metrics, life-cycle CO₂.
+- Couple it to a **simulation layer** that:
+  - plays out disruptions and demand scenarios,
+  - measures recovery time, lost demand, and emissions under each candidate policy.
 
-```json
-{
-  "data": {
-    "secret": "Hello",
-    "remainingReads": 1
-  }
-}
-```
+### 4. Carbon accounting module
+
+- Use freight emissions logic (distance × tonnes × mode emission factors).
+- Combine process energy per unit with regional grid intensity for packaging.
+- Optionally translate CO₂ into a cost dimension via carbon pricing scenarios.
+
+### 5. Case study & experiments
+
+- Set up a stylized but plausible CoWoS/HBM network (locations, capacities, distances, emission factors).
+- Run disruption and carbon-price scenarios.
+- Generate 2D/3D Pareto frontiers and sensitivity plots.
+- Interpret when resilience and decarbonization are aligned vs in tension.
+
+---
+
+## Where it is right now
+
+Very honestly, the thesis is currently in the **early-to-mid build** stage:
+
+- Phase 0/1: core idea + introduction are locked and iterating.
+- Literature review is sketched with clear gaps identified.
+- Model structure (sets, variables, objectives, constraints) is defined on paper and being translated into code.
+- Simulation details and carbon module are being refined around a CoWoS/HBM case study.
+
+As the work evolves, this page will be updated with:
+
+- more precise model choices,
+- early experimental results,
+- and links to drafts / slides / code.
+
+---
+
+If this sounds interesting and you want to see drafts or talk about the model, you can reach me through the contact page or LinkedIn.
