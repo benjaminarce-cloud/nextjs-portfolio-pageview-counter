@@ -29,7 +29,12 @@ export default async function ProjectsPage() {
         new Date(b.date ?? Number.POSITIVE_INFINITY).getTime() -
         new Date(a.date ?? Number.POSITIVE_INFINITY).getTime(),
     );
-
+// DEBUG: remove later
+const debugProjects = allProjects.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  published: p.published,
+}));
   const [featured, top2, top3, ...sorted] = published;
 
   return (
@@ -50,7 +55,22 @@ export default async function ProjectsPage() {
             write-up or repo.
           </p>
         </div>
-
+        
+     {/* DEBUG: remove later */}
+     <div className="mt-8 rounded-lg border border-yellow-900/60 bg-yellow-950/20 p-4 text-xs text-yellow-200">
+       <p className="font-semibold mb-2">
+         Debug – projects contentlayer knows about:
+       </p>
+       <ul className="space-y-1">
+         {debugProjects.map((p) => (
+           <li key={p.slug}>
+             <span className="font-mono">{p.slug}</span> — {p.title}{" "}
+             {p.published ? "(published)" : "(not published)"}
+           </li>
+         ))}
+       </ul>
+     </div>
+        
         <div className="w-full h-px bg-zinc-800" />
 
         {/* Featured + side column (only if we have at least one project) */}
