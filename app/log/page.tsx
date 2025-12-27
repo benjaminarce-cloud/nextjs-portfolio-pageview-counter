@@ -1,5 +1,6 @@
 // app/log/page.tsx
 import React from "react";
+import Link from "next/link";
 import { Navigation } from "../components/nav";
 import { Card } from "../components/card";
 
@@ -9,6 +10,10 @@ type LogItem = {
   summary: string;
   details: string[];
   tags?: string[];
+  project?: {
+    slug: string;
+    label: string;
+  };
 };
 
 const logItems: LogItem[] = [
@@ -24,6 +29,10 @@ const logItems: LogItem[] = [
       "First time the model chose a longer route in kilometers but cheaper in total cost (driver time + fuel) was the moment it stopped feeling like a school assignment and more like a tiny real tool.",
     ],
     tags: ["logistics", "python", "optimization"],
+    project: {
+      slug: "cross-border-fleet-optimizer",
+      label: "Cross-Border Fleet Optimizer",
+    },
   },
   {
     date: "2025-07-20",
@@ -37,6 +46,10 @@ const logItems: LogItem[] = [
       "Learned the hard way that static CSVs are both a blessing and a limitation: great for controlled experiments, bad if you pretend it’s production-ready. Accepted that this version is a thinking tool, not an ERP replacement.",
     ],
     tags: ["manufacturing", "analytics", "streamlit"],
+    project: {
+      slug: "manufacturing-cost-intelligence-system",
+      label: "Manufacturing Cost Intelligence System",
+    },
   },
   {
     date: "2025-11-10",
@@ -50,6 +63,10 @@ const logItems: LogItem[] = [
       "Started drafting the formal structure: sets, decision variables, tri-objective function (cost, resilience, carbon), and a simulation layer for disruption scenarios. The math itself is fine; the real curve has been understanding which modeling choices are honest vs just convenient.",
     ],
     tags: ["thesis", "semiconductors", "research"],
+    project: {
+      slug: "cows-hbm-chokepoint-thesis",
+      label: "CoWoS/HBM Chokepoint Thesis",
+    },
   },
   {
     date: "2025-12-05",
@@ -64,6 +81,10 @@ const logItems: LogItem[] = [
       "The payoff: the team now talks in terms of “reds” and “yellows” instead of screenshotting spreadsheets. That alone made the pain worth it.",
     ],
     tags: ["powerbi", "supply-chain", "automation"],
+    project: {
+      slug: "latam-inventory-health-dashboard",
+      label: "LATAM Inventory Health Dashboard",
+    },
   },
   {
     date: "2025-12-27",
@@ -77,10 +98,20 @@ const logItems: LogItem[] = [
       "The Log you’re reading now exists because I didn’t want a dead portfolio. This is the running timeline of how the Cross-Border optimizer, the manufacturing system, the thesis, the dashboard, and this very site evolved.",
     ],
     tags: ["meta", "portfolio", "vercel"],
+    project: {
+      slug: "benjaminarce-portfolio",
+      label: "This Portfolio",
+    },
   },
 ];
 
 export default function LogPage() {
+  // New: sort newest → oldest
+  const sortedLogItems = [...logItems].sort(
+    (a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
   return (
     <div className="relative pb-16">
       <Navigation />
@@ -102,7 +133,7 @@ export default function LogPage() {
 
         {/* Entries */}
         <div className="space-y-6">
-          {logItems.map((item) => (
+          {sortedLogItems.map((item) => (
             <Card key={item.date}>
               <article className="p-4 md:p-6 space-y-3">
                 <div className="flex items-baseline justify-between gap-4">
@@ -146,6 +177,18 @@ export default function LogPage() {
                     </li>
                   ))}
                 </ul>
+
+                {item.project && (
+                  <div className="pt-3 mt-3 border-t border-zinc-800">
+                    <Link
+                      href={`/projects/${item.project.slug}`}
+                      className="text-xs font-medium text-zinc-400 hover:text-zinc-100 inline-flex items-center gap-1"
+                    >
+                      Related project: {item.project.label}
+                      <span aria-hidden="true">↗</span>
+                    </Link>
+                  </div>
+                )}
               </article>
             </Card>
           ))}
