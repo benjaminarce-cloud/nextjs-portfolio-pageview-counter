@@ -1,115 +1,161 @@
-## What this actually is
 
-This is basically a **super-opinionated GPS for a tiny cross-border fleet**.
+## What this actually is (plain language)
 
-You give it:
+This is my “long game” project.
 
-- a depot in Laredo, Texas,
-- a set of cities in the US and Mexico,
-- how many kilograms each city needs,
-- simple delivery windows,
+I’m trying to answer a very specific question:  
+**If the world keeps depending on Taiwan for advanced packaging, how do we make the semiconductor supply chain more resilient without just dumping the cost onto the climate?**
 
-and it spits out a plan for five trucks:
+More concretely: I’m building a **tri-objective simulation–optimization model** for one very narrow, very important chokepoint in the global semi chain:
 
-- which cities each truck should visit,
-- in what order,
-- when it will roughly arrive,
-- and a map that makes the whole day visually obvious.
+- CoWoS / HBM advanced packaging (the step that turns high-bandwidth memory + logic dies into the actual AI monsters everyone is buying).
+- Under disruptions (outages, demand spikes, logistics shocks).
+- With three objectives in conflict:
+  - total cost,
+  - resilience (service performance + recovery time),
+  - life-cycle carbon emissions.
 
-It’s meant for the person who currently plans routes with a whiteboard, Google Maps, and vibes.
-
----
-
-## Why I bothered to build it
-
-I grew up near the border, and the logistics there is both **massive** and **weirdly low-tech**.
-
-Dispatchers are often:
-
-- juggling customs, drivers, and last-minute changes,
-- but planning routes by hand,
-- with very little help thinking about cost beyond “shortest distance.”
-
-That annoyed me. It’s exactly the kind of problem humans are bad at:
-
-- five trucks,
-- ten cities,
-- different demands and time windows,
-- and a messy trade-off between distance, time, and cost.
-
-So this project is my answer to:  
-
-> “Can I build something that actually plans better than a human,  
-> while still being simple enough that a human would trust it?”
+The goal is not “another generic resilience framework,” but a tool that shows, in numbers, **what trade-offs are even possible** when you *don’t* assume that all firms share data and cooperate.
 
 ---
 
-## What actually worked
+## Why I cared enough to go this deep
 
-- **The routes were non-obvious in a good way.**  
-  Once I wired in the cost model (fuel + driver wages), the optimizer started choosing routes that were *longer in kilometers* but *cheaper overall* because they used faster highways and less driver time. That’s when it stopped feeling like a school project.
-- **Switching to real road data changed everything.**  
-  I started with straight-line distances. It looked pretty, but it lied.  
-  Hooking in a local OSRM instance to get real travel times and distances turned it into something you could actually believe.
-- **The one-command workflow made experimentation fun.**  
-  Moving from an interactive CLI (“answer 10 questions every run”) to a single `scenario_input.csv` and one command made it easy to test a ton of scenarios. That’s huge if you actually want this to be used, not just demoed.
-- **The map output tells the story faster than any table.**  
-  A Folium map with each truck color-coded instantly shows whether the load split makes sense. You can literally see when one truck is doing way too much.
+Short version: I kept reading “just collaborate more” in the literature and didn’t buy it.
 
----
+Most semiconductor resilience papers end with some version of:  
+“firms should increase transparency, share data, and collaborate to coordinate responses.”
 
-## What’s still janky (being honest)
+Sounds nice. Also sounds like something that will never fully happen in a world where:
 
-- **Texas is “real,” Mexico is still a hack.**  
-  OSRM is running on a Texas map file, so inside Texas you get real road distances. Once you cross into Mexico, it falls back to straight-line approximations. For something that calls itself *cross-border*, that’s… not ideal.
-- **The cost model is baby-level.**  
-  Flat cost per km, flat cost per hour. No overtime, no toll roads, no fuel price differences across countries. It’s good enough to show trade-offs, not good enough to sign contracts.
-- **Time windows are all-or-nothing.**  
-  If a client has an impossible delivery window (5-hour drive, 4-hour window), the solver just fails. A real planner would say “we’re one hour late and we’ll call them.” The model doesn’t understand “least-bad” yet.
-- **Setup is not dispatcher-friendly.**  
-  It requires Docker, OSRM, and a moderately patient brain. Zero chance a stressed dispatcher in Laredo is doing that at 6:30 am.
+- advanced chips are literally called “strategic technologies,”  
+- export controls and IP wars are the norm,  
+- and a single company (TSMC) sits in the crosshairs of both the U.S. and China.
+
+So I wanted to flip the question:
+
+> Assume no magical cross-firm data sharing.  
+> What can a *single enterprise* still do, at the CoWoS/HBM stage, to buy resilience without blowing up cost and carbon?
+
+This thesis is my attempt to answer that question in a way that is honest about the politics, not just the math.
 
 ---
 
-## What I’d do next if I had another sprint
+## Where the thesis is right now
 
-- **Map data for all North America.**  
-  Give OSRM a proper full-region extract so US–Mexico traffic is modeled with real roads on both sides.
-- **Richer cost model.**  
-  Add:
-  - overtime wages after X hours,
-  - different fuel costs per country,
-  - toll road penalties.
-- **Soft time-window penalties.**  
-  Allow the model to “break” a time window at a price instead of giving up completely. That’s how real life works.
-- **Simple web UI.**  
-  Wrap the whole thing in a small web app (Streamlit, Flask, or a proper front-end) where a planner can:
-  - upload a CSV,
-  - hit “Run,”
-  - see the plan + map,
-  - and download the report.
+I’m still early, but the skeleton is clear:
+
+- **Motivation & context drafted**  
+  I’ve written the introduction on semis as “invisible infrastructure,” why CoWoS/HBM is a chokepoint, and why resilience vs decarb isn’t a fake trade-off here.
+- **Literature map sketched**  
+  I’ve mapped three pillars:
+  - quantitative resilience / disruption modeling (Ivanov, Hosseini, Klos),
+  - decarb + multi-objective optimization (carbon pricing, emission factors),
+  - semiconductor-specific resilience (Ramírez & Le, CSET, Wu).
+- **Research questions locked**  
+  Roughly:
+  - What does the cost–resilience–carbon Pareto frontier look like at this chokepoint?
+  - Which levers (regional capacity split, safety capacity, transport modes) move you along that frontier the most?
+  - Where do resilience gains directly clash with decarb goals?
+
+Right now I’m in the **“turn all this into a clean model”** phase: formalizing sets, decisions, and objectives in math instead of vibes.
 
 ---
 
-## Technical appendix (for people who like guts)
+## How I’m planning to attack it (explainer version)
 
-- **Problem:** Capacitated Vehicle Routing Problem with Time Windows (CVRPTW).
-- **Language:** Python.
-- **Libraries:**
-  - `pandas` for data,
-  - Google `ortools` for routing,
-  - `folium` for map visualizations,
-  - `geopy` for fallback distance calculations.
-- **Routing engine:**
-  - Local OSRM instance in Docker for realistic road distance / time,
-  - straight-line fallback when a route leaves the covered region.
-- **Data inputs:**
-  - `data.py` with a master list of cities + coordinates,
-  - `scenario_input.csv` specifying which cities are active, their demand, and time windows.
-- **Model structure:**
-  - Trucks with fixed capacity (25,000 kg),
-  - each customer has demand + time window,
-  - objective: minimize total cost = distance × cost_per_km + time × cost_per_hour.
-- **Architecture detail I like:**  
-  The routing logic lives in `routing_client.py` so I can swap OSRM for, say, Google Maps without rewriting the optimizer.  
-  Each run writes outputs into timestamped directories, so every scenario has a traceable record.
+### 1. Model the network around the chokepoint
+
+I focus on a minimal but realistic network:
+
+- HBM suppliers → CoWoS packaging sites (e.g. Taiwan, Japan, maybe a “new” region) → downstream DC/OEM.
+- Flows move through these nodes with:
+  - capacity limits,
+  - lead times,
+  - disruption risks,
+  - emission factors for each leg and mode.
+
+Key assumption: **no cross-firm data sharing.**  
+All decisions are made with what one firm could plausibly know.
+
+### 2. Optimization layer – design candidates
+
+On top of that network I define a multi-objective optimization problem:
+
+- Decision variables:
+  - how to split volume across packaging regions,
+  - how much “safety” capacity to hold,
+  - what mix of transport modes to use by route (air vs sea, etc.).
+- Objectives:
+  - \( f_1 \): expected total cost,
+  - \( f_2 \): resilience metrics (service level, recovery time under shocks),
+  - \( f_3 \): expected emissions (CO₂e) across production and logistics.
+
+This layer doesn’t say “this is the one best design.”  
+Instead, it finds **a set of good but different designs** that lie along the Pareto frontier.
+
+### 3. Simulation layer – stress test those designs
+
+Then I throw disruptions at each design using a discrete-event / Monte-Carlo style simulator:
+
+- multi-week outages of a CoWoS site,
+- demand spikes on AI SKUs,
+- combined shocks.
+
+For each candidate design, the simulator measures:
+
+- total cost under disruption,
+- how badly service degrades,
+- how long it takes to recover,
+- and resulting emissions.
+
+That’s how I map each design onto the cost–resilience–carbon space.
+
+### 4. Carbon accounting and pricing
+
+For logistics and operations, I use standard-ish approaches:
+
+- freight emissions = tonnes × distance × mode-specific emission factor,
+- process emissions tied to regional grid intensity and process energy per unit,
+- optional carbon price scenarios that convert CO₂ into equivalent cost.
+
+The point is not to predict exact grams, but to **make relative trade-offs visible** and consistent.
+
+---
+
+## What I expect to learn (and maybe be wrong about)
+
+Honest version of the hypotheses I’m walking in with:
+
+- You can get **surprisingly far** on resilience with just private levers (regional split, safety capacity, modes), even without industry-wide coordination.
+- There will be **regions on the frontier where resilience and decarb align** (e.g. moving volume to cleaner but also more diversified sites).
+- There will also be **ugly regions where resilience basically means “pay more and emit more”**, especially under tight carbon pricing and long-distance air freight.
+
+If the model ends up saying something completely different, that’s even more interesting.
+
+---
+
+## Technical appendix (for the nerds)
+
+If you care about the guts, here’s the current direction in bullet form:
+
+- **Problem type:** tri-objective simulation–optimization at a single chokepoint in a multi-echelon supply chain.
+- **Decision layer:**
+  - Sets: regions \( r \), time periods \( t \), product / flow types \( p \), transport modes \( m \).
+  - Decisions:
+    - \( x_{pr} \): share of product \( p \) allocated to packaging in region \( r \),
+    - \( c_r \): additional “safety” capacity contracted in region \( r \),
+    - \( m_{prt} \): share of flow \( p,r \) shipped by mode \( m \) in period \( t \).
+- **Objectives:**
+  - \( f_1 \): expected total cost (capacity, operations, logistics, penalties),
+  - \( f_2 \): resilience metric (e.g. service loss / time to recovery aggregated over scenarios),
+  - \( f_3 \): life-cycle CO₂e of packaging + logistics.
+- **Solution idea:**
+  - Use a multi-objective heuristic (e.g. NSGA-II/III or related) to generate candidate designs.
+  - For each design, run a set of discrete-event / Monte-Carlo simulations across disruption scenarios.
+- **Emissions accounting:**
+  - freight emissions: GLEC / ISO-style \( \text{CO₂} = d \times w \times EF_{mode} \),
+  - process emissions: \( \text{CO₂}_{packaging,r} = E_{unit,r} \times \text{grid\_intensity}_r \),
+  - scenario runs with different carbon prices to see how the frontier shifts.
+
+This is all still in motion, but the spine is there. As the thesis matures, this page will turn into the running log of what changed and what actually worked.
