@@ -30,6 +30,10 @@ export default async function ProjectsPage() {
         new Date(a.date ?? Number.POSITIVE_INFINITY).getTime(),
     );
 
+  // Split into featured, next two, and the rest
+  const [featured, ...rest] = published;
+  const [top2, top3, ...sorted] = rest;
+
   return (
     <div className="relative pb-16">
       <Navigation />
@@ -48,9 +52,7 @@ export default async function ProjectsPage() {
             write-up or repo.
           </p>
         </div>
-        
-  
-        
+
         <div className="w-full h-px bg-zinc-800" />
 
         {/* Featured + side column (only if we have at least one project) */}
