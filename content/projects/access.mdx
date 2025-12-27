@@ -1,173 +1,207 @@
 ---
 title: "Manufacturing Cost Intelligence System"
-description: A “flight simulator” for manufacturing decisions that replaces gut feel spreadsheets.
+description: A “flight simulator” for manufacturing decisions that replaces gut-feel spreadsheets.
 repository: benjaminarce-cloud/manufacturing-cost-intelligence
 date: "2025-12-01"
 published: true
 ---
 
-> Reality check: this won’t replace an ERP. But it’s already better than the messy spreadsheets most teams are using to make multi-million dollar decisions.
+> Reality check: this will not replace an ERP. But it is already better than the messy spreadsheets most teams are using to make multi-million-dollar decisions.
 
 ---
 
 ## What this actually is
 
-This is a Manufacturing Cost Intelligence System — basically a "flight simulator for business decisions" for a company that makes physical products.
+Think of this as a **flight simulator for manufacturing decisions**.
 
-In practice, it’s an interactive dashboard that lets a manager or executive simulate the financial impact of real-world shocks across their entire product line.
+It is an interactive dashboard where a manager can say:
 
-It’s built for people like a CFO, COO, or Operations Manager who need to answer big, expensive questions fast. The tool supports decisions like:
+- “Semiconductor costs go up 15%,”  
+- or “Logistics costs drop 5%,”  
+- or “We give workers a 5% raise,”  
 
-- **Reacting to supply chain shocks**  
-  “Semiconductors just went up 15% globally. What’s the total annual hit to gross profit, and which products are now at risk of going negative?”
+and the system answers:
 
-- **Strategic planning**  
-  “Our union is negotiating a 5% wage increase. Can we absorb it, or do we need to raise prices? If we do, how does that change volume and revenue?”
+- How does that hit total gross profit?
+- Which products are still safe?
+- Which ones just became a problem?
 
-- **Proactive management**  
-  “Which products are truly profitable, and where are the hidden financial risks?”
+It is built for people like a CFO, COO, or Operations Manager who live in questions like:
 
-It takes those messy, company-wide questions and turns them into clear numbers in seconds — and then lets an AI layer build the narrative on top.
+- *“What happens to our portfolio if input X changes?”*  
+- *“Where are we secretly losing money?”*  
+- *“Which levers actually move the needle?”*
+
+The app turns those into numbers in a few seconds **and** hands them to an AI that writes a short strategic briefing instead of just leaving you alone with charts.
 
 ---
 
 ## Why I cared enough to build it
 
-Before this tool, answering “What happens if fuel costs go up?” looked like this:
+Before this thing existed, the real workflow looked like this:
 
-1. Dig through multiple spreadsheets:
-   - one with product recipes (BOM)
-   - one with labor rates
-   - another with supplier pricing
-2. Change a few key cells and hope the web of formulas doesn’t break.
-3. Guess the impact on one or two obvious products and ignore everything else.
+1. Someone says “fuel is going up, what does that mean for us?”
+2. An unlucky analyst opens three giant spreadsheets:
+   - one with product recipes (BOM),
+   - one with labor and overhead,
+   - one with supplier and logistics costs.
+3. They change a few cells, hope the formulas do not break, and then:
+   - give a rough answer for one or two products,
+   - with zero visibility of the whole portfolio.
 
-It was slow, reactive, and felt more like “damage control” than decision-making.
+It was slow, fragile, and reactive.  
+It felt more like **damage control** than decision-making.
 
-I wanted a single place where you can:
+I wanted something where you can:
 
-- push one slider,  
-- see portfolio-level impact,  
-- and then talk about strategy instead of chasing formulas.
+- move a single slider,  
+- see the portfolio-level impact immediately,  
+- and then have a decent conversation about strategy instead of babysitting Excel.
 
-That’s the whole motivation.
+That was the itch.
 
 ---
 
 ## What actually worked
 
-Three things feel “real” already:
+Three parts feel “real” already:
 
 ### 1. The what-if engine
 
-The core P&L simulator is the main win.  
-Moving a slider like `+15% Semiconductors` and seeing the portfolio-wide annual impact in real time is the moment where this stops being a toy and starts being useful.
+The core P&L simulator is the main win.
 
-This used to take **days** of manual analysis in spreadsheets. Now it’s a few seconds.
+Moving a slider like **“+15% on semiconductors”** and watching the annual impact ripple through the whole product portfolio in real time is the moment where this stops feeling like a toy.
+
+This used to take **days** of manual spreadsheet work. Now it is a single run.
+
+---
 
 ### 2. The AI strategist
 
-The AI doesn’t just say “chips bad, costs up.”
+The AI is not just “ChatGPT stapled onto a dashboard.”
 
-In a test “Semiconductor crisis” scenario, it:
+In a semiconductor shock test, it:
 
-- correctly flagged chips as the immediate pain,  
-- but recommended focusing on **internal machine-time optimization** as the highest-leverage move,  
-- using the Feasibility scores from the cost table to justify why.
+- correctly flagged chips as the immediate pain point,
+- but recommended focusing on **internal machine-time optimization** as the highest-leverage move,
+- and used the Feasibility scores from the cost table to justify why that was more realistic than trying to “fight the global chip market.”
 
-So it’s not just rephrasing charts — it’s acting like a decent junior consultant with access to your actual numbers.
+So it behaves more like a junior consultant who has actually looked at your numbers, not just a summarizer of charts.
+
+---
 
 ### 3. The portfolio health view
 
-The “Stars” vs “At-Risk” view exposed some uncomfortable truths:
+The **“Stars” vs “At-Risk”** view did something uncomfortable but useful:
 
-- some high-volume products that “felt” successful were surviving on razor-thin margins  
-- those are now obvious candidates for price reviews or cost-reduction work
+- it showed that some high-volume, “successful” products were living on razor-thin margins,
+- which makes them huge risk magnets when any cost driver moves.
 
-This is stuff that was technically there in the spreadsheets, but nobody saw it clearly.
+Those products were technically visible in the old spreadsheets too, but nobody was seeing them clearly.  
+Now they are highlighted in one screen and force a conversation: raise prices, cut cost, or kill them.
 
 ---
 
-## What’s still messy (being honest)
+## What is still messy (being honest)
 
-Some limitations I’m very aware of:
+This is not production-grade yet. A few big limitations:
 
-- **Static data**  
-  All costs (materials, labor, logistics) come from CSVs.  
-  For daily use, this needs live APIs (commodities, FX, freight indices, etc.).
+- **Static input data**  
+  All costs (materials, labor, logistics) live in CSV files.  
+  For day-to-day use, this needs live APIs for:
+  - commodity prices,
+  - FX rates,
+  - maybe a freight index.
 
 - **Subjective Feasibility scores**  
-  The Feasibility column in `manual_cost_drivers.csv` is my judgment call.  
-  In a real company this would come from workshops and data, not “vibes.”
+  The Feasibility column in `manual_cost_drivers.csv` is basically my judgment call.  
+  In a real deployment, those scores would come from workshops and structured input from operations, not “Ben’s vibe on a Sunday.”
 
-- **Overly linear model**  
-  A 10% cost increase is currently treated as a 10% impact.  
-  There’s no modeling of:
-  - economies of scale  
-  - volume discounts  
-  - tiered pricing  
-  - realistic demand elasticity
+- **Over-linear world**  
+  Right now:
+  - a 10% cost increase → 10% impact in the model.  
+  There is no modeling of:
+  - volume discounts,
+  - step changes (e.g. needing a new line or a new plant),
+  - realistic demand elasticity.
 
-- **Region logic is simplified**  
-  The whole thing behaves like a single “Texas-style” region.  
-  A real deployment needs per-plant / per-region costs, taxes, and tariffs.
+- **Simplified geography**  
+  The current version acts like everything happens in one generic region.  
+  A serious implementation needs:
+  - per-plant / per-region costs,
+  - taxes,
+  - tariffs,
+  - maybe different risk profiles per geography.
 
-So it’s strong as a **thinking tool**, not yet a production-grade planning system.
+So: it is strong as a **thinking tool** and a portfolio x-ray.  
+It is not yet a full replacement for a corporate planning system.
 
 ---
 
-## What I’d do next
+## What I would do next
 
-Rough roadmap:
+If I had another focused sprint, I would prioritize:
 
-- **1. Live data integration**  
-  Replace `manual_cost_drivers.csv` with:
-  - live fuel prices  
-  - FX rates  
-  - maybe a basic freight index
+1. **Live data integration**  
+   Replace the static `manual_cost_drivers.csv` with:
+   - live fuel prices,
+   - currency rates,
+   - and at least one external index for logistics.
 
-- **2. Multi-driver scenarios**  
-  Support stacked shocks like:
-  - `+10% Steel`  
-  - `+5% Labor`  
-  - `−3% Logistics`  
-  in the same run, with clean UI.
+2. **Multi-driver scenarios**  
+   Let users stack shocks in one run, for example:
+   - `+10% Steel`,
+   - `+5% Labor`,
+   - `−3% Logistics`,
+   and see how they interact.
 
-- **3. Monte-Carlo forecasting**  
-  Let a user define volatility ranges around key costs, then run many simulations to get a distribution: best case, worst case, and likely band.
+3. **Monte-Carlo style forecasting**  
+   Let the user specify volatility ranges, then run many simulations to produce a distribution of possible outcomes:
+   - best case,
+   - worst case,
+   - central band.
 
-- **4. Conversational AI layer**  
-  Turn the static report into a chat:
-  - “What’s the ROI on the machine-time optimization?”  
-  - “Compare the top three levers and list pros/cons.”
+4. **Interactive AI**  
+   Turn the static strategy report into a conversation:
+   - “What is the ROI if we pull the machine-time lever you suggested?”
+   - “Compare the top three interventions and list pros/cons and implementation difficulty.”
 
 ---
 
 ## Technical details (for people who care about the plumbing)
 
-- **Stack**
-  - Streamlit frontend
-  - Pandas for data work
-  - Plotly + FPDF2 + Kaleido for charts and export
-  - OpenAI Chat API (`gpt-3.5-turbo-instruct`) for the strategy brief
+- **Tech stack**
+  - Streamlit frontend,
+  - Pandas for data work,
+  - Plotly + FPDF2 + Kaleido for visualizations and export,
+  - OpenAI Chat API (`gpt-3.5-turbo-instruct`) for the strategy brief.
 
-- **Data**
-  - `bom_products.csv`: BOM per product (components, quantities, price, volume, elasticity, region)
-  - `manual_cost_drivers.csv`: cost per component + Feasibility score
-  - Joins: component key, trying `(Component, Region)` first, then `(Component, "Default")`
+- **Data model**
+  - `bom_products.csv`  
+    - one row per product,  
+    - components, quantities, price, volume, elasticity, region.
+  - `manual_cost_drivers.csv`  
+    - one row per cost driver,  
+    - rate, unit, region, Feasibility score.
+
+  Joins happen in memory. The engine tries to match on `(Component, Region)` first, and falls back to `(Component, "Default")` if needed.
 
 - **Engine**
-  - `portfolio_simulator.py`: bottom-up cost simulation that rolls up to portfolio-level P&L
-  - AI prompt engineering:
-    - persona = “top-tier management consultant”
-    - Feasibility hints to push it toward realistic internal levers
-    - explicit “don’t just restate the graphs” constraints
+  - `portfolio_simulator.py`  
+    - bottom-up cost simulation,  
+    - rolls per-unit costs into product-level and portfolio-level P&L,
+    - supports price changes and simple demand elasticity in the same run.
 
-- **Engineering**
-  - `utils.py` runs validation on startup (duplicate costs, unit mismatches, etc.)
-  - Core logic in `/app/core` decoupled from `/app/main.py` (Streamlit UI)
-  - Secrets via `st.secrets` with a safe fallback prompt for API keys
+  - AI integration:
+    - persona: “top-tier management consultant,”  
+    - Feasibility passed explicitly so it looks for **realistic** levers,  
+    - negative instructions like “do not just restate the graphs.”
+
+- **Engineering details I like**
+  - `utils.py` runs validation on startup (duplicate entries, unit mismatches, etc.) so the app fails fast instead of giving wrong numbers quietly.
+  - Core calculation logic lives in `/app/core`, separate from the Streamlit UI in `/app/main.py`, so the “brain” can be tested or reused without the front-end.
+  - OpenAI keys are handled with `st.secrets` and only fall back to a manual input if needed, so it is set up with deployment in mind.
 
 ---
 
-If you’ve read this far and want the raw code or a deeper walkthrough, send me a message or ping me on LinkedIn.
+If you want to see the raw code or walk through a specific scenario, the repo is linked above. I am happy to talk through what is real, what is hacked, and what I would build next if I had more time.
