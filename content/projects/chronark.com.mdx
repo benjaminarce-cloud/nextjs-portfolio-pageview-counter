@@ -1,142 +1,115 @@
----
-title: "Cross-Border Route Optimizer"
-description: A custom-built “super-GPS” that plans cost-optimal routes for a small cross-border truck fleet.
-repository: benjaminarce-cloud/Cross-Border-Fleet-Optimizer
-date: "2025-11-15"
-published: true
----
-
 ## What this actually is
 
-This is basically a custom-built “super-GPS” for a small fleet of trucks.
+This is basically a **super-opinionated GPS for a tiny cross-border fleet**.
 
-At its core, the Cross-Border Route Optimizer is a command-line tool that figures out
-the cheapest way to send a fleet of five trucks from a depot in Laredo, Texas, to a
-bunch of cities in both the US and Mexico. You give it a list of cities and how much
-each city needs (in kilograms), and it spits out a plan.
+You give it:
 
-The output tells you, truck by truck, exactly which cities to visit and in what order.
-It also gives you the estimated arrival time at each stop and generates an interactive
-map showing all the routes.
+- a depot in Laredo, Texas,
+- a set of cities in the US and Mexico,
+- how many kilograms each city needs,
+- simple delivery windows,
 
-A logistics planner or a small business owner would use this. Instead of guessing how
-to split up the day&apos;s deliveries, they run this tool. It helps them make real decisions:
+and it spits out a plan for five trucks:
 
-- Which driver gets which cities? The tool automatically groups cities into efficient routes.
-- Can we meet the customer&apos;s delivery window? It respects time constraints (like
-  “deliver between 8 AM and 12 PM”).
-- How much will today&apos;s routes cost? It optimizes for the lowest total cost, factoring in
-  both fuel and driver wages, not just the shortest distance.
+- which cities each truck should visit,
+- in what order,
+- when it will roughly arrive,
+- and a map that makes the whole day visually obvious.
 
-It turns a messy, multi-hour planning headache into a one-command, ~30-second process.
+It’s meant for the person who currently plans routes with a whiteboard, Google Maps, and vibes.
 
-## Context / why I cared enough to build it
+---
 
-I was thinking about the chaos of cross-border logistics, especially around a major hub
-like Laredo. A huge amount of goods flows between the US and Mexico, and it&apos;s an
-incredibly complex operation.
+## Why I bothered to build it
 
-A lot of the planning is still done manually or with very basic tools. A dispatcher
-might use a whiteboard or a simple spreadsheet, trying to eyeball the best routes.
-This is slow, error-prone, and almost certainly not the cheapest way to do things.
+I grew up near the border, and the logistics there is both **massive** and **weirdly low-tech**.
 
-Manual methods can&apos;t account for all the variables at once: five different trucks,
-each with a weight limit; ten different cities, some with strict delivery times; and
-the trade-off between a shorter, slower route and a longer, faster highway. The human
-brain just can&apos;t compute the optimal answer reliably.
+Dispatchers are often:
 
-I built this because it felt like a perfect “code vs. chaos” problem. It&apos;s a real-world
-puzzle with a clear goal: save money by being smarter. I wanted to see if I could build
-a tool that actually outperforms a human planner by using proper optimization algorithms.
+- juggling customs, drivers, and last-minute changes,
+- but planning routes by hand,
+- with very little help thinking about cost beyond “shortest distance.”
 
-## What worked (so far)
+That annoyed me. It’s exactly the kind of problem humans are bad at:
 
-- It actually produces smart, non-obvious routes. The first time I ran it with the cost
-  model, it chose a route that was longer in distance but faster in time, because it
-  correctly calculated that saving on driver hourly wages was more important than
-  saving a bit of fuel. That felt like a real win: the machine made a strategic decision
-  I wouldn&apos;t have thought of.
-- Switching from “straight-line” distances to real road data was a game-changer. After
-  integrating a local OSRM routing engine, the distance and travel-time estimates became
-  dramatically more realistic. This is the part I&apos;m most proud of because it elevated
-  the project from a theoretical exercise to a practical tool.
-- The one-command run makes testing fast. Refactoring it to read from a single
-  `scenario_input.csv` file means I can test dozens of different scenarios just by
-  editing a text file instead of answering prompts every time.
-- The visual map output is genuinely useful. Seeing the routes drawn on a map is far
-  more intuitive than reading lists of city names. It immediately tells a story about
-  how the workload is split and where the trucks are going.
+- five trucks,
+- ten cities,
+- different demands and time windows,
+- and a messy trade-off between distance, time, and cost.
 
-## What was messy or incomplete (being honest)
+So this project is my answer to:  
 
-- The map data is limited to Texas. The OSRM setup uses a map file for a specific region,
-  so it can calculate road routes within Texas perfectly, but it falls back to straight-line
-  distances for travel in Mexico. That means the “cross-border” part is still a bit of a hack.
-- The cost model is basic. It assumes a constant cost per kilometer and a constant cost per
-  hour. It doesn&apos;t account for overtime pay, different fuel costs in the US vs. Mexico, or
-  toll roads.
-- There are no “soft” failures. If a customer&apos;s time window is impossible to meet
-  (e.g., a city is 7 hours away but the delivery must be there in 5), the entire
-  optimization fails. A better system would find the least-bad solution and show which
-  deliveries are late.
-- The OSRM setup is clunky for non-technical users. It requires installing Docker and running
-  several terminal commands. It&apos;s powerful, but not user-friendly. A real product version
-  would have a simple installer or run as a web service.
+> “Can I build something that actually plans better than a human,  
+> while still being simple enough that a human would trust it?”
 
-## What I’d do next
+---
 
-- Get better map coverage and process an OSRM map file for all of North America so both US
-  and Mexico routes use real road data.
-- Build a more realistic cost model with overtime wages, different fuel costs by country,
-  and toll-road logic.
-- Implement soft time-window penalties so the solver can choose to violate a time window,
-  add a penalty to the cost, and still return a usable plan instead of failing.
-- Create a simple web interface (Streamlit / Flask / whatever makes sense) so users can
-  upload a scenario CSV, click “Run”, and see the report + interactive map in the browser
-  without touching the command line.
+## What actually worked
 
-## Technical deep dive (bullet list)
+- **The routes were non-obvious in a good way.**  
+  Once I wired in the cost model (fuel + driver wages), the optimizer started choosing routes that were *longer in kilometers* but *cheaper overall* because they used faster highways and less driver time. That’s when it stopped feeling like a school project.
+- **Switching to real road data changed everything.**  
+  I started with straight-line distances. It looked pretty, but it lied.  
+  Hooking in a local OSRM instance to get real travel times and distances turned it into something you could actually believe.
+- **The one-command workflow made experimentation fun.**  
+  Moving from an interactive CLI (“answer 10 questions every run”) to a single `scenario_input.csv` and one command made it easy to test a ton of scenarios. That’s huge if you actually want this to be used, not just demoed.
+- **The map output tells the story faster than any table.**  
+  A Folium map with each truck color-coded instantly shows whether the load split makes sense. You can literally see when one truck is doing way too much.
 
-**Tech stack**
+---
 
-- Language: Python  
-- Core libraries:  
-  - Pandas (data manipulation)  
-  - Google OR-Tools (optimization)  
-  - Folium (map visualization)  
-  - Geopy (fallback distance calculation)  
-- Routing engine: OSRM (Open Source Routing Machine) running locally in Docker  
-- Environment: Python virtual environment (`venv`) to manage dependencies  
+## What’s still janky (being honest)
 
-**Data sources and joins**
+- **Texas is “real,” Mexico is still a hack.**  
+  OSRM is running on a Texas map file, so inside Texas you get real road distances. Once you cross into Mexico, it falls back to straight-line approximations. For something that calls itself *cross-border*, that’s… not ideal.
+- **The cost model is baby-level.**  
+  Flat cost per km, flat cost per hour. No overtime, no toll roads, no fuel price differences across countries. It’s good enough to show trade-offs, not good enough to sign contracts.
+- **Time windows are all-or-nothing.**  
+  If a client has an impossible delivery window (5-hour drive, 4-hour window), the solver just fails. A real planner would say “we’re one hour late and we’ll call them.” The model doesn’t understand “least-bad” yet.
+- **Setup is not dispatcher-friendly.**  
+  It requires Docker, OSRM, and a moderately patient brain. Zero chance a stressed dispatcher in Laredo is doing that at 6:30 am.
 
-- `data.py` contains a master list of potential customer cities with names and lat/lon.
-- `scenario_input.csv` defines the specific daily problem: chosen cities, product demand,
-  and time-window constraints.
-- In `main()`, these two sources are merged with `pandas.merge()` on city name, enriching
-  the scenario with coordinates for the routing engine.
+---
 
-**Modeling and optimization**
+## What I’d do next if I had another sprint
 
-- Problem: Capacitated Vehicle Routing Problem with Time Windows (CVRPTW).
-- Solver: Google OR-Tools `pywrapcp` (constraint programming routing solver).
-- Objective: minimize total operational cost via a custom `cost_callback` that computes  
-  `(distance * cost_per_km) + (time * cost_per_hour)` for each arc.
+- **Map data for all North America.**  
+  Give OSRM a proper full-region extract so US–Mexico traffic is modeled with real roads on both sides.
+- **Richer cost model.**  
+  Add:
+  - overtime wages after X hours,
+  - different fuel costs per country,
+  - toll road penalties.
+- **Soft time-window penalties.**  
+  Allow the model to “break” a time window at a price instead of giving up completely. That’s how real life works.
+- **Simple web UI.**  
+  Wrap the whole thing in a small web app (Streamlit, Flask, or a proper front-end) where a planner can:
+  - upload a CSV,
+  - hit “Run,”
+  - see the plan + map,
+  - and download the report.
 
-**Constraints**
+---
 
-- Capacity: `AddDimensionWithVehicleCapacity` ensures each truck&apos;s route never exceeds
-  its 25,000 kg payload.
-- Time windows: a time dimension tracks cumulative time along each route and uses
-  `SetRange()` to enforce arrival within each location&apos;s time window.
-- Mandatory visits: `AddDisjunction` with a high penalty forces the solver to serve
-  all cities instead of “optimizing” by skipping them.
+## Technical appendix (for people who like guts)
 
-**Interesting engineering details**
-
-- The routing logic lives in a separate `routing_client.py`, so the routing provider
-  (OSRM, Google Maps, Geopy) can be swapped without touching the core optimization model.
-- Each run writes outputs into timestamped directories so results never overwrite each other
-  and you get an auditable log of scenarios.
-- Costs are converted to integers (e.g., cents) before passing them to the solver to avoid
-  floating-point issues; they&apos;re converted back to dollars only for reporting.
+- **Problem:** Capacitated Vehicle Routing Problem with Time Windows (CVRPTW).
+- **Language:** Python.
+- **Libraries:**
+  - `pandas` for data,
+  - Google `ortools` for routing,
+  - `folium` for map visualizations,
+  - `geopy` for fallback distance calculations.
+- **Routing engine:**
+  - Local OSRM instance in Docker for realistic road distance / time,
+  - straight-line fallback when a route leaves the covered region.
+- **Data inputs:**
+  - `data.py` with a master list of cities + coordinates,
+  - `scenario_input.csv` specifying which cities are active, their demand, and time windows.
+- **Model structure:**
+  - Trucks with fixed capacity (25,000 kg),
+  - each customer has demand + time window,
+  - objective: minimize total cost = distance × cost_per_km + time × cost_per_hour.
+- **Architecture detail I like:**  
+  The routing logic lives in `routing_client.py` so I can swap OSRM for, say, Google Maps without rewriting the optimizer.  
+  Each run writes outputs into timestamped directories, so every scenario has a traceable record.
