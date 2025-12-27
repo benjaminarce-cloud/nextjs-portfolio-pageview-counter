@@ -1,0 +1,215 @@
+---
+title: "Inventory Health Dashboard for a LATAM Supply Chain Team"
+description: Turning a daily Incorta email into a live traffic-light view of safety stock vs actual stock across LATAM.
+repository: benjaminarce-cloud/latam-inventory-health-dashboard
+date: "2025-12-10"
+published: true
+---
+
+> No AI, no fancy optimizer. Just wiring up the basics so people stop flying blind on inventory.
+
+---
+
+## What this actually is
+
+This is an **Inventory Health Dashboard** for a regional supply chain team in LATAM.
+
+Every day, they get an export from an upstream analytics system (Incorta) with:
+
+- on-hand stock by material and country,
+- safety stock levels,
+- some basic metadata.
+
+Instead of:
+
+- manually opening that file,
+- filtering it a hundred different ways,
+- and guessing where the problems are,
+
+this project turns that daily email into:
+
+- a Power BI dashboard,
+- refreshed automatically,
+- with a **traffic-light status** for each material and country:
+
+- green: stock comfortably above safety stock,  
+- yellow: getting close,  
+- red: below safety stock, attention needed.
+
+You can slice it by:
+
+- country,
+- material code,
+- status (green / yellow / red),
+
+and quickly answer the question:  
+**“Where are we exposed right now?”**
+
+---
+
+## Why this needed to exist
+
+The starting point was very basic but very real:
+
+- planners were getting a report in their inbox every morning,
+- opening it in Excel,
+- scrolling around until they spotted something scary,
+- and then reacting.
+
+There was no:
+
+- consistent definition of “healthy” vs “risky” stock,
+- portfolio-level view by country,
+- quick way to explain to leadership where the real problems were.
+
+It was all:
+
+- “I think we’re okay in Country A,”  
+- “We might be tight in Country B,”  
+- and a lot of “let me check and get back to you.”
+
+This dashboard is my attempt to fix that with the least amount of drama:
+
+- use the report they already have,
+- automate the boring part,
+- give them a single place where they can see what actually matters.
+
+---
+
+## What actually worked
+
+A few things clicked nicely:
+
+### 1. The traffic-light logic made conversations simpler
+
+Instead of debating raw numbers, people started talking in a shared language:
+
+- “How many reds do we have in Country X?”  
+- “Why is this material stuck in yellow for the third week?”  
+
+The exact thresholds are simple, but having them codified in the model turned vague concerns into concrete questions.
+
+---
+
+### 2. The automation chain quietly removed a daily chore
+
+The data pipeline is simple but effective:
+
+- the Incorta report arrives by email,
+- Power Automate detects the attachment and drops it into a SharePoint folder,
+- Power BI is wired to that folder and refreshes on schedule.
+
+Nobody has to:
+
+- download attachments,
+- rename files,
+- or remember to refresh the dashboard.
+
+It just shows up.
+
+---
+
+### 3. The “one-page view” of LATAM changed the discussion
+
+Before this, each country was kind of its own universe.
+
+With the dashboard:
+
+- you can see all countries side by side,
+- compare how many materials are in red or yellow,
+- and spot patterns, like:
+  - a specific material that is chronically understocked everywhere,
+  - or a country that always sits on too much inventory.
+
+It turned “how are we doing?” from a feeling into a picture.
+
+---
+
+## Where it is still rough (being honest)
+
+This is not some perfect, global control tower. A few limitations:
+
+- **Still tied to a single upstream report**  
+  If the Incorta layout changes, everything breaks. There is no robust schema control or validation layer yet.
+
+- **Safety stock is taken as a given**  
+  The dashboard treats safety stock as truth.  
+  It does not question whether those levels are well calibrated, which is probably where a lot of value is hiding.
+
+- **No forward-looking view**  
+  Everything is “as of today.”  
+  There is no demand forecast overlay, no lead time view, and no estimate of how fast a green could become a red.
+
+- **No formal alerting yet**  
+  The visual is strong, but there is no automated alert like:
+  > “Send me an email when a red appears in these key SKUs.”
+
+So: it is a big step up from raw Excel, but it is still V1.
+
+---
+
+## What I would do next
+
+If I had another chunk of time on this, I would push it in three directions:
+
+1. **Make the data more robust**
+   - add a small validation step so if the upstream file changes structure, the pipeline fails loudly instead of silently giving wrong numbers,
+   - log ingestion history so you can see which days did or did not refresh correctly.
+
+2. **Question safety stock instead of just visualizing it**
+   - pull in demand history,
+   - recompute candidate safety stock levels,
+   - and show where the current settings look too conservative or too risky.
+
+3. **Add alerts and simple workflows**
+   - let users subscribe to specific materials or countries,
+   - send a daily or weekly summary like:
+     > “3 new reds in Country A, 2 resolved in Country B.”
+
+---
+
+## Technical details (for people who care about the plumbing)
+
+- **Tools**
+  - Data source: daily Incorta export delivered by email,
+  - Orchestration: Power Automate (email to SharePoint),
+  - Storage: SharePoint folder as the raw file landing zone,
+  - BI layer: Power BI.
+
+- **Data flow**
+  1. Incorta sends a daily report (typically Excel or CSV).
+  2. Power Automate flow:
+     - triggers on new email from a specific sender / subject,
+     - saves the attachment into a dated folder in SharePoint.
+  3. Power BI:
+     - connects to that SharePoint folder,
+     - uses a Power Query step to:
+       - clean column names,
+       - select relevant fields (material, plant/country, on-hand quantity, safety stock, etc.),
+       - add a calculated “status” column (green / yellow / red).
+
+- **Dashboards and logic**
+  - Core calculated measures:
+    - `StockGap = OnHand - SafetyStock`,
+    - `Status =`  
+      - green: StockGap well above threshold,  
+      - yellow: StockGap close to zero within a band,  
+      - red: StockGap below zero.
+  - Visuals:
+    - summary cards (count of greens, yellows, reds),
+    - table by country and material with status colors,
+    - slicers for:
+      - country,
+      - material code,
+      - status.
+
+- **My role**
+  - designed the status logic and thresholds,
+  - set up the Power Automate flow and SharePoint structure,
+  - built the Power BI model and visuals,
+  - iterated with the team based on how they actually used it day to day.
+
+---
+
+I cannot show the real data for obvious reasons, but the architecture and ideas are the important part.  
+If you are curious about the layout or want a generic version of the PBIX, reach out and I can sketch a sanitized example.
